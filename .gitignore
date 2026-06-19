@@ -1,0 +1,53 @@
+# ---------- OS / Editor ----------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+.vscode/
+.idea/
+
+# ---------- Logs ----------
+*.log
+logs/
+transcript
+
+# ---------- Build / Compile ----------
+*.o
+*.out
+*.elf
+*.bin
+*.hex
+*.mem
+*.map
+
+# ---------- Verilog/SystemVerilog Simulation ----------
+*.vcd
+*.fst
+*.wlf
+*.fsdb
+*.vpd
+*.trn
+
+# ---------- Tool-generated directories/files ----------
+work/
+simv
+simv.daidir/
+csrc/
+obj_dir/
+xsim.dir/
+modelsim.ini
+vsim.wlf
+compile.log
+run.log
+
+# ---------- Coverage / Reports (generated) ----------
+coverage/
+cov_work/
+urgReport/
+*.ucdb
+
+# ---------- Temporary outputs ----------
+*.jou
+*.pb
+*.str
