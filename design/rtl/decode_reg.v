@@ -6,6 +6,8 @@
 // ============================================================
 module decode_reg (
     input  wire        CLK,
+    input  wire        Reset,   // synchronous reset
+    input  wire        Flush,   // synchronous flush (for branch/jump hazards)
 
     // --- Control signals (Decode stage) ---
     input  wire        RegWriteD,
@@ -43,22 +45,39 @@ module decode_reg (
 );
 
     always @(posedge CLK) begin
-        // Control path
-        RegWriteE   <= RegWriteD;
-        ResultSrcE  <= ResultSrcD;
-        MemWriteE   <= MemWriteD;
-        JumpE       <= JumpD;
-        BranchE     <= BranchD;
-        ALUControlE <= ALUControlD;
-        ALUSrcE     <= ALUSrcD;
-
-        // Data path
-        RD1E        <= RD1;
-        RD2E        <= RD2;
-        PCE         <= PCD;
-        RdE         <= RdD;
-        ImmExtE     <= ImmExtD;
-        PCPlus4E    <= PCPlus4D;
+        if (Reset || Flush) begin
+            // Clear all control signals to NOP state
+            RegWriteE   <= 1'b0;
+            ResultSrcE  <= 2'b00;
+            MemWriteE   <= 1'b0;
+            JumpE       <= 1'b0;
+            BranchE     <= 1'b0;
+            ALUControlE <= 3'b000;
+            ALUSrcE     <= 1'b0;
+            // Clear data path
+            RD1E        <= 32'b0;
+            RD2E        <= 32'b0;
+            PCE         <= 32'b0;
+            RdE         <= 5'b0;
+            ImmExtE     <= 32'b0;
+            PCPlus4E    <= 32'b0;
+        end else begin
+            // Control path
+            RegWriteE   <= RegWriteD;
+            ResultSrcE  <= ResultSrcD;
+            MemWriteE   <= MemWriteD;
+            JumpE       <= JumpD;
+            BranchE     <= BranchD;
+            ALUControlE <= ALUControlD;
+            ALUSrcE     <= ALUSrcD;
+            // Data path
+            RD1E        <= RD1;
+            RD2E        <= RD2;
+            PCE         <= PCD;
+            RdE         <= RdD;
+            ImmExtE     <= ImmExtD;
+            PCPlus4E    <= PCPlus4D;
+        end
     end
 
 endmodule

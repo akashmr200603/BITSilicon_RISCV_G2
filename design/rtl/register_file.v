@@ -6,6 +6,7 @@
 // ============================================================
 module register_file (
     input  wire        CLK,
+    input  wire        Reset,  // synchronous reset
 
     // Read ports
     input  wire [4:0]  A1,   // rs1 address (InstrD[19:15])
@@ -21,9 +22,14 @@ module register_file (
 
     reg [31:0] rf [31:0];
 
-    // Synchronous write; x0 is never written
+    integer i;
+
+    // Synchronous write with reset; x0 is never written
     always @(posedge CLK) begin
-        if (WE3 && (A3 != 5'b0))
+        if (Reset) begin
+            for (i = 0; i < 32; i = i + 1)
+                rf[i] <= 32'b0;
+        end else if (WE3 && (A3 != 5'b0))
             rf[A3] <= WD3;
     end
 

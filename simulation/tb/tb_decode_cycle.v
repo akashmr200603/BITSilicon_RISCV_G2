@@ -18,6 +18,7 @@ module tb_decode_cycle;
     reg         RegWriteW;
     reg  [4:0]  RDW;
     reg  [31:0] ResultW;
+    reg         Reset, Flush;
 
     wire        RegWriteE;
     wire [1:0]  ResultSrcE;
@@ -29,6 +30,8 @@ module tb_decode_cycle;
 
     decode_cycle dut (
         .CLK        (CLK),
+        .Reset      (Reset),
+        .Flush      (Flush),
         .InstrD     (InstrD),
         .PCD        (PCD),
         .PCPlus4D   (PCPlus4D),
@@ -66,7 +69,9 @@ module tb_decode_cycle;
         // Init
         InstrD = 0; PCD = 0; PCPlus4D = 4;
         RegWriteW = 0; RDW = 0; ResultW = 0;
+        Reset = 1; Flush = 0;
         @(posedge CLK); #1;
+        Reset = 0;
 
         // --- Write x1=100, x2=200 via writeback ---
         RegWriteW = 1; RDW = 5'd1; ResultW = 32'd100;
@@ -119,6 +124,15 @@ module tb_decode_cycle;
         apply_instr(32'h0080_00ef, 32'h18);
         $display("JumpE=%b RegWriteE=%b ResultSrcE=%b",
                   JumpE, RegWriteE, ResultSrcE);
+
+        // --- Flush test: apply addi then flush, expect NOP at Execute ---
+        $display("\n--- Flush test (addi then Flush=1) ---");
+        Flush = 1;
+        apply_instr(32'h0050_8193, 32'h1c);  // addi x3, x1, 5
+        Flush = 0;
+        #1;
+        $display("RegWriteE=%b MemWriteE=%b BranchE=%b JumpE=%b (expect all 0)",
+                  RegWriteE, MemWriteE, BranchE, JumpE);
 
         $display("\nDecode Cycle simulation complete.");
         $finish;

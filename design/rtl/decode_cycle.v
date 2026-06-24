@@ -24,6 +24,8 @@
 
 module decode_cycle (
     input  wire        CLK,
+    input  wire        Reset,    // synchronous reset
+    input  wire        Flush,    // flush D/E register on branch/jump
 
     // ---------- Inputs from Fetch stage ----------
     input  wire [31:0] InstrD,
@@ -101,8 +103,9 @@ module decode_cycle (
     // 2. Register File
     // --------------------------------------------------------
     register_file u_rf (
-        .CLK  (CLK),
-        .A1   (InstrD[19:15]),   // rs1
+        .CLK   (CLK),
+        .Reset (Reset),
+        .A1    (InstrD[19:15]),   // rs1
         .A2   (InstrD[24:20]),   // rs2
         .RD1  (RD1D),
         .RD2  (RD2D),
@@ -125,6 +128,8 @@ module decode_cycle (
     // --------------------------------------------------------
     decode_reg u_dreg (
         .CLK          (CLK),
+        .Reset        (Reset),
+        .Flush        (Flush),
         // Control in
         .RegWriteD    (RegWriteD),
         .ResultSrcD   (ResultSrcD),

@@ -33,7 +33,7 @@ module extend (
             2'b11: ImmExt = {{12{instr[31]}}, instr[19:12], instr[20],
                               instr[30:21], 1'b0};
 
-            default: ImmExt = 32'bx;
+            default: ImmExt = 32'b0;
         endcase
     end
 
